@@ -26,7 +26,7 @@
         SET   title   = #{title}
           , content = #{content}
           , up_date = now()
-        WHERE bno = #{bno}
+        WHERE bno = #{bno} and writer = #{writer}
     </update>
 
     <delete id="deleteForAdmin">
@@ -59,4 +59,24 @@
     <delete id="deleteAll">
         DELETE FROM board
     </delete>
+
+
+
+<!-- 검색 -->
+    <select id="searchSelectPage" parameterType="SearchCondition" resultType="BoardDto">
+        SELECT bno, title, content, writer, view_cnt, comment_cnt, reg_date
+        FROM board
+        WHERE true
+        AND title LIKE concat('%', #{keyword}, '%')
+        ORDER BY reg_date DESC, bno DESC
+            LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="searchResultCnt" parameterType="SearchCondition" resultType="int">
+        SELECT count(*)
+        FROM board
+        WHERE true
+          AND title LIKE concat('%', #{keyword}, '%')
+    </select>
+
 </mapper>

@@ -29,13 +29,20 @@
         <li><a href=""><i class="fas fa-search small"></i></a></li>
     </ul>
 </div>
+
+<script>
+    let msg = "${msg}";
+    if(msg == "WRT_ERR") alert("게시물 등록에 실패했습니다. 다시 시도해주세요.";
+    if(msg == "MOD_ERR") alert("게시물 수정에 실패했습니다. 다시 시도해주세요.")
+</script>
+
 <div style="text-align:center">
     <h2>게시물 ${mode == "new" ? "글쓰기" : "읽기"}</h2>
     <form action="" id="form">
         <input type="hidden" name="bno" value="${boardDto.bno}">
         <input type="text" name="title" value="${boardDto.title}" ${mode != "new" ? 'readonly="readonly"' : ''}>
         <textarea name="content" cols="30" rows="10" ${mode != "new" ? 'readonly="readonly"' : ''}>${boardDto.content}</textarea>
-        <button type="button" id="writeBtn" class="btn">등록</button>
+        <button type="button" id="writeBtn" class="btn">글쓰기</button>
         <button type="button" id="modifyBtn" class="btn">수정</button>
         <button type="button" id="removeBtn" class="btn">삭제</button>
         <button type="button" id="listBtn" class="btn">목록</button>
@@ -47,10 +54,12 @@
 
     $(function(){
 
+        // 목록
         $("#listBtn").on("click", function(){
             location.href = "<c:url value='/board/list'/>?page=${page}&pageSize=${pageSize}";
         });
 
+        // 삭제
         $("#removeBtn").on("click", function(){
             if(!confirm("정말로 삭제 하시겠습니까?")) return;
             let form = $("#form");
@@ -59,6 +68,28 @@
             form.submit();
         });
 
+
+        // 수정
+        $("#modifyBtn").on("click", function(){
+
+            let form = $("#form");
+            let isReadOnly = $("input[name=title]").prop("readonly");
+
+            // 1. 읽기 상태 - 수정 상태로 변경
+            if(isReadOnly) {
+                $("input[name=title]").prop("readonly", false);
+                $("textarea").prop("readonly", false);
+                $("#modifyBtn").text("등록");
+                $("h2").text("게시물 수정");
+                return;
+            }
+            // 2. 수정 상태 - 수정된 내용을 서버로 전송
+            form.attr("action", "<c:url value='/board/modify?page=${page}&pageSize=${pageSize}'/>");
+            form.attr("method", "post");
+            form.submit();
+        });
+
+        // 글쓰기
         $("#writeBtn").on("click", function(){
             let form = $("#form");
             form.attr("action", "<c:url value='/board/write'/>");
