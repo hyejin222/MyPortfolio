@@ -6,6 +6,8 @@
     <typeAliases>
         <typeAlias alias="BoardDto" type="com.fastcampus.ch4.domain.BoardDto"/>
         <typeAlias alias="SearchCondition" type="com.fastcampus.ch4.domain.SearchCondition"/>
-        <typeAlias alias="searchResultCnt" type="com.fastcampus.ch4.domain.searchResultCnt"/>
+<!--        <typeAlias alias="searchResultCnt" type="com.fastcampus.ch4.domain.searchResultCnt"/>-->
+        <typeAlias alias="CommentDto" type="com.fastcampus.ch4.domain.CommentDto"/>
+
     </typeAliases>
 </configuration>
