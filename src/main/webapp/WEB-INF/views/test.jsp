@@ -17,6 +17,11 @@ comment: <input type="text" name="comment"></br>
 <button id="sendBtn" type="button">SEND</button>
 <button id="modBtn" type="button">수정</button>
 <div id="commentList"></div>
+
+<div id="replyForm" style="display:none;">
+    <input type="text" name="replyComment">
+    <button type="button" id="wrtRepBtn">등록</button>
+</div>
 <script>
 
     let bno = 2222;
@@ -94,6 +99,43 @@ comment: <input type="text" name="comment"></br>
 
         });
 
+
+        // 답글
+        $("#commentList").on("click", ".replyBtn", function() {
+            $("#replyForm").appendTo($(this).parent());
+            $("#replyForm").show();
+        });
+
+        // 답글 등록
+        $("#wrtRepBtn").click(function(){
+            let comment = $("input[name=replyComment]").val();
+            let pcno = $("#replyForm").parent().attr("data-pcno");
+
+            if(comment.trim() == "") {
+                alert("댓글을 입력해주세요.");
+                $("input[name=replyComment]").focus();
+                return;
+            }
+
+            $.ajax({
+                type:'POST',       // 요청 메서드
+                url: '/ch4/comments?bno=' + bno,  // 요청 URI
+                headers : { "content-type": "application/json"}, // 요청 헤더
+                data : JSON.stringify({pcno: pcno, bno: bno, comment: comment}),  // 서버로 전송할 데이터. stringify()로 직렬화 필요.
+                success : function(result){
+                    alert(result);
+                    showList(bno);
+                },
+                error   : function(){ alert("error") } // 에러가 발생했을 때, 호출될 함수
+            }); // $.ajax()
+
+            // 초기화 작업
+            $("#replyForm").hide();
+            $("input[name=replyComment]").val('');
+            $("#replyForm").appendTo("body");
+        });
+
+
         // 삭제
         $("#commentList").on("click", ".delBtn", function() {
             let cno = $(this).parent().attr("data-cno");
@@ -119,11 +161,13 @@ comment: <input type="text" name="comment"></br>
             tmp += '<li data-cno=' + comment.cno
             tmp += ' data-pcno=' + comment.pcno
             tmp += ' data-bno=' + comment.bno + '>'
+            if(comment.cno != comment.pcno) tmp += 'ㄴ'
             tmp += ' commenter=<span class="commenter">' + comment.commenter + '</span>'
             tmp += ' comment=<span class="comment">' + comment.comment + '</span>'
             tmp += ' up_date=' + comment.up_date
             tmp += '<button class="delBtn">삭제</button>'
             tmp += '<button class="modBtn">수정</button>'
+            tmp += '<button class="replyBtn">답글</button>'
             tmp += '</li>'
         });
         return tmp + "</ul>";
